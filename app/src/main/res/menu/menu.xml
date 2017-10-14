@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_help"
+        android:icon="@drawable/ic_add_black_48dp_00"
+
+        android:title="Help" />
+    <item
+        android:id="@+id/add_person"
+        android:icon="@drawable/ic_add_black_48dp_00"
+
+        android:title="Add Person to Household"/>
+    <item
+        android:id="@+id/add_reminder"
+        android:icon="@drawable/ic_add_black_48dp_00"
+        android:title="Add Reminder" />
+</menu>

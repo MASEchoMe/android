@@ -1,7 +1,12 @@
 package mas.echome;
 
+import android.animation.Animator;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.drawable.Animatable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -10,12 +15,30 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import io.github.yavski.fabspeeddial.FabSpeedDial;
+import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class HomeActivity extends AppCompatActivity {
+
+    private ListView listView;
+    private ArrayList<String> tasks;
+    ArrayAdapter<String> adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,9 +47,37 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
+        fabSpeedDial.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
 
-    }
+                switch (menuItem.getItemId()) {
+                    case R.id.action_help:
+
+                        return true;
+                    case R.id.add_person:
+
+                        return true;
+                    case R.id.add_reminder:
+                        addEvent(getCurrentFocus());
+                }
+                return true;
+            }
+        });
+
+        listView = (ListView) findViewById(R.id.list);
+        tasks = new ArrayList<>();
+
+        tasks.add("");
+
+
+        adapter = new ArrayAdapter<String>(this,
+        android.R.layout.simple_list_item_1, android.R.id.text1, tasks);
+        listView.setAdapter(adapter);
+
+
+        }
 
     protected void addEvent(View view) {
         LayoutInflater factory = LayoutInflater.from(this);
@@ -45,7 +96,8 @@ public class HomeActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int whichButton) {
-
+                    tasks.add(input1.getText().toString() + ": " + input2.getText().toString());
+                        adapter.notifyDataSetChanged();
                     }
                 }).setNegativeButton("Cancel",
                 new DialogInterface.OnClickListener() {
@@ -56,7 +108,5 @@ public class HomeActivity extends AppCompatActivity {
                 });
         alert.show();
     }
-
-
-
 }
+
