@@ -13,9 +13,12 @@
     <string name="error_field_required">This field is required</string>
     <string name="recipient">Recipient</string>
     <string name="title">Title</string>
+    <string name="name">Name of Person</string>
     <string name="new_event">New Event</string>
+    <string name="mailbox">My Mailbox</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
     <string name="title_activity_home">HomeActivity</string>
+    <string name="title_activity_mailbox">Mailbox</string>
 </resources>

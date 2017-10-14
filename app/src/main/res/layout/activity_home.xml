@@ -15,26 +15,41 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:title="hello"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
+
+
+
     <include layout="@layout/content_home" />
+
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        android:layout_below="@+id/mymailbox"
         android:padding="16dp">
 
         <ListView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/list"
+            android:layout_below="@+id/toolbar"
 
         />
+
+        <Button
+            android:layout_width="match_parent"
+            android:id="@+id/mymailbox"
+            android:layout_height="wrap_content"
+            android:onClick="gotoMailbox"
+            android:text="@string/mailbox">
+
+        </Button>
 
         <io.github.yavski.fabspeeddial.FabSpeedDial
             android:id="@+id/fab_speed_dial"
@@ -48,6 +63,13 @@
             app:miniFabTitleTextColor="?attr/colorPrimaryDark" />
 
     </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    </LinearLayout>
 
 
 </android.support.design.widget.CoordinatorLayout>
