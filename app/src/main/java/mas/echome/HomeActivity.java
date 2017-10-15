@@ -181,13 +181,19 @@ public class HomeActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog,
                                         int whichButton) {
 
-                        if (!(householdNames.contains(name.getText().toString()))) {
+                        ArrayList<String> householdCopy = new ArrayList<String>();
+
+                        for (String s : householdNames) {
+                            householdCopy.add(s.toLowerCase());
+                        }
+
+                        if (!(householdCopy.contains(name.getText().toString().toLowerCase()))) {
                             Toast.makeText(getApplicationContext(),"Make sure that person is already in the household!",Toast.LENGTH_SHORT).show();
                         } else {
                             int i  = 0;
                             int index = 0;
                             for (Person p: household) {
-                                if (p.getName().toLowerCase().equals(name.getText().toString().toLowerCase())) {
+                                if (p.getName().toLowerCase().equalsIgnoreCase(name.getText().toString())) {
                                     index = i;
                                 }
                                 i++;
@@ -217,14 +223,24 @@ public class HomeActivity extends AppCompatActivity {
 
         final AlertDialog.Builder alert = new AlertDialog.Builder(this);
 
+        final ArrayList<String> householdCopy = new ArrayList<String>();
+
+        for (String s : householdNames) {
+            householdCopy.add(s.toLowerCase());
+        }
+
         alert.setTitle("Add Person to Household:").setView(textEntryView).setPositiveButton("Add",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int whichButton) {
-                        Person p = new Person(name.getText().toString());
-                        household.add(p);
-                        householdNames.add(name.getText().toString());
-                        adapter.notifyDataSetChanged();
+                        if (householdCopy.contains(name.getText().toString().toLowerCase())) {
+                            Toast.makeText(getApplicationContext(),"That person's already been added!",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Person p = new Person(name.getText().toString());
+                            household.add(p);
+                            householdNames.add(name.getText().toString());
+                            adapter.notifyDataSetChanged();
+                        }
 
                     }
                 }).setNegativeButton("Cancel",
