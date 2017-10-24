@@ -16,6 +16,9 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.method.LinkMovementMethod;
+import android.text.util.Linkify;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -92,6 +95,7 @@ public class HomeActivity extends AppCompatActivity {
                 builder.setTitle("Current Tasks");
 
 
+
                 ListView modeList = new ListView(view.getContext());
                 builder.setView(modeList);
                 final Dialog dia = builder.create();
@@ -100,14 +104,25 @@ public class HomeActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> parent, View view, final int newpos,
                                             long id) {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                        builder.setTitle("Don't Forget!");
+
 
                         ListView modeList = new ListView(view.getContext());
                         Task curTask = household.get(position).getTasks().get(newpos);
 
-                        builder.setMessage(curTask.getDescription() + " \n\nLeft by " + curTask.getSenderName() + " on " + curTask.getDate().toString());
+                        builder.setTitle(curTask.getDescription());
+                        final TextView message = new TextView(view.getContext());
+                        final SpannableString s =
+                                new SpannableString("\n\n Looking for a product? We recommend: \n\n"
+                                        + "https://www.amazon.com/Super-Sticky-Colors-Self-Stick-Sheets/dp/B075TY6SK5/ref=" +
+                                        "sr_1_1_sspa?ie=UTF8&qid=1508803922&sr=8-1-spons&keywords=large+sticky+notes&psc=1" + "\n\n Left by: "
+                                        + "Rodrigo" + " at " + curTask.getDate().toString());
+                        Linkify.addLinks(s, Linkify.WEB_URLS);
+                        message.setText(s);
+                        message.setPadding(10, 10, 10, 10);
+                        message.setMovementMethod(LinkMovementMethod.getInstance());
 
-                        builder.setView(modeList);
+
+                        builder.setView(message);
 
                         builder.setPositiveButton("Mark as Completed",
                                 new DialogInterface.OnClickListener() {
@@ -127,11 +142,16 @@ public class HomeActivity extends AppCompatActivity {
 
                         final Dialog dialog = builder.create();
                         dialog.show();
+                        TextView msgTxt = (TextView) message;
+                        msgTxt.setMovementMethod(LinkMovementMethod.getInstance());
+
                     }
                 });
 
                 builder.setView(modeList);
                 dia.show();
+
+
 
                 ArrayList<String> curTasks = new ArrayList<String>();
                 Person p = household.get(position);
