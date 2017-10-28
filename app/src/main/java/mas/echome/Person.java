@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Alex on 10/14/2017.
+ * Defines any person in the household.
  */
 
 public class Person {

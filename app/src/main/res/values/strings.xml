@@ -12,13 +12,18 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="recipient">Recipient</string>
+    <string name="your_household_id">Your Unique Household ID</string>
+    <string name="go_back">Go Back</string>
+    <string name="your_name">Your Name</string>
     <string name="title">Title</string>
     <string name="name">Name of Person</string>
     <string name="new_event">New Event</string>
     <string name="mailbox">My Mailbox</string>
+    <string name="setup_mailbox">Setup Mailbox</string>
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_activity_mailbox">Mailbox</string>
+    <string name="title_activity_setup">SetupActivity</string>
 </resources>

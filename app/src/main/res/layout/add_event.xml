@@ -9,6 +9,7 @@
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/activity_horizontal_margin"
         android:paddingRight="@dimen/activity_horizontal_margin"
+        android:backgroundTint="@color/colorPrimary"
         android:completionThreshold="1"
         android:hint="@string/recipient"
         android:id="@+id/recipient"/>
@@ -16,6 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:backgroundTint="@color/colorPrimary"
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:hint="@string/title"
         android:id="@+id/Title"/>

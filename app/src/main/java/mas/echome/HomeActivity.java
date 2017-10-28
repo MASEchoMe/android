@@ -49,7 +49,7 @@ public class HomeActivity extends AppCompatActivity {
     private ListView listView;
     ArrayAdapter<String> adapter;
 
-    private ArrayList<Person> household;
+    private Household household = new Household();
     private ArrayList<String> householdNames;
 
 
@@ -85,7 +85,7 @@ public class HomeActivity extends AppCompatActivity {
         });
 
 
-
+        //HANDLES INITIAL CLICKING ON NAME FROM HOME SCREEN
         listView = (ListView) findViewById(R.id.list);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -94,11 +94,11 @@ public class HomeActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
                 builder.setTitle("Current Tasks");
 
-
-
                 ListView modeList = new ListView(view.getContext());
                 builder.setView(modeList);
                 final Dialog dia = builder.create();
+
+                //HANDLES CLICKING ON INDIVIDUAL TASKS FROM INSIDE LIST
                 modeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int newpos,
@@ -106,55 +106,54 @@ public class HomeActivity extends AppCompatActivity {
                         AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
 
 
-                        ListView modeList = new ListView(view.getContext());
-                        Task curTask = household.get(position).getTasks().get(newpos);
+                        try {
+                            Task curTask = household.getPerson(position).getTasks().get(newpos);
+                            builder.setTitle(curTask.getDescription());
 
-                        builder.setTitle(curTask.getDescription());
-                        final TextView message = new TextView(view.getContext());
-                        final SpannableString s =
-                                new SpannableString("\n\n Looking for a product? We recommend: \n\n"
-                                        + "https://www.amazon.com/Super-Sticky-Colors-Self-Stick-Sheets/dp/B075TY6SK5/ref=" +
-                                        "sr_1_1_sspa?ie=UTF8&qid=1508803922&sr=8-1-spons&keywords=large+sticky+notes&psc=1" + "\n\n Left by: "
-                                        + "Rodrigo" + " at " + curTask.getDate().toString());
-                        Linkify.addLinks(s, Linkify.WEB_URLS);
-                        message.setText(s);
-                        message.setPadding(10, 10, 10, 10);
-                        message.setMovementMethod(LinkMovementMethod.getInstance());
+                            final TextView message = new TextView(view.getContext());
+                            final SpannableString s =
+                                    new SpannableString("Left by: "
+                                            + curTask.getSenderName() + " at " + curTask.getDate().toString());
+                            Linkify.addLinks(s, Linkify.WEB_URLS);
+                            message.setText(s);
+                            message.setPadding(30, 30, 30, 30);
+                            message.setMovementMethod(LinkMovementMethod.getInstance());
+                            builder.setView(message);
+                            builder.setPositiveButton("Mark as Completed",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,
+                                                            int whichButton) {
+                                            household.getPerson(position).getTasks().remove(newpos);
+                                            adapter.notifyDataSetChanged();
+                                            dia.dismiss();
+                                        }
+                                    }).setNegativeButton("Cancel",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog,
+                                                            int whichButton) {
+                                            dia.dismiss();
+                                            return;
 
+                                        }
+                                    });
 
-                        builder.setView(message);
+                            final Dialog dialog = builder.create();
+                            dialog.show();
+                            TextView msgTxt = (TextView) message;
+                            msgTxt.setMovementMethod(LinkMovementMethod.getInstance());
 
-                        builder.setPositiveButton("Mark as Completed",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int whichButton) {
-                                        household.get(position).getTasks().remove(newpos);
-                                        adapter.notifyDataSetChanged();
-                                        dia.dismiss();
-                                    }
-                                }).setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int whichButton) {
-                                        return;
-                                    }
-                                });
-
-                        final Dialog dialog = builder.create();
-                        dialog.show();
-                        TextView msgTxt = (TextView) message;
-                        msgTxt.setMovementMethod(LinkMovementMethod.getInstance());
-
+                        } catch (Exception e) {
+                            Toast.makeText(view.getContext(), "There's no tasks for this person!", Toast.LENGTH_SHORT).show();
+                            dia.dismiss();
+                        }
                     }
                 });
 
                 builder.setView(modeList);
                 dia.show();
 
-
-
                 ArrayList<String> curTasks = new ArrayList<String>();
-                Person p = household.get(position);
+                Person p = household.getPerson(position);
 
                 if (p.getNumTasks() == 0) {
                     curTasks.add("No tasks available for " + p.getName() + " right now.");
@@ -169,10 +168,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
-
-        household = new ArrayList<>();
         //TODO: FIX SPACING BUG THAT REQUIRES ""
-        household.add(new Person(""));
+        household.addToHousehold(new Person(""));
 
         householdNames = new ArrayList<>();
         householdNames.add("");
@@ -190,7 +187,7 @@ public class HomeActivity extends AppCompatActivity {
 
         final ArrayList<String> householdNames= new ArrayList<>();
         final AutoCompleteTextView name = (AutoCompleteTextView) textEntryView.findViewById(R.id.recipient);
-        for (Person p: household) {
+        for (Person p: household.getMembers()) {
             householdNames.add(p.getName());
         }
         final ArrayAdapter<String> nameAdapter = new ArrayAdapter<String>(alert.getContext(), android.R.layout.simple_list_item_1, householdNames);
@@ -212,13 +209,13 @@ public class HomeActivity extends AppCompatActivity {
                         } else {
                             int i  = 0;
                             int index = 0;
-                            for (Person p: household) {
+                            for (Person p: household.getMembers()) {
                                 if (p.getName().toLowerCase().equalsIgnoreCase(name.getText().toString())) {
                                     index = i;
                                 }
                                 i++;
                             }
-                            household.get(index).giveTask(new Task(new Person("InsertSenderHere"), input2.getText().toString()));
+                            household.getPerson(index).giveTask(new Task(new Person("InsertSenderHere"), input2.getText().toString()));
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -257,7 +254,7 @@ public class HomeActivity extends AppCompatActivity {
                             Toast.makeText(getApplicationContext(),"That person's already been added!",Toast.LENGTH_SHORT).show();
                         } else {
                             Person p = new Person(name.getText().toString());
-                            household.add(p);
+                            household.addToHousehold(p);
                             householdNames.add(name.getText().toString());
                             adapter.notifyDataSetChanged();
                         }
