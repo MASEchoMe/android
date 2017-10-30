@@ -15,6 +15,7 @@ public class Mailbox extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(android.R.style.Theme_Holo_NoActionBar);
         setContentView(R.layout.activity_mailbox);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("My Mailbox");

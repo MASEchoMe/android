@@ -34,6 +34,9 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.content.Context;
+import android.content.ContextWrapper;
+import android.support.v7.view.menu.MenuBuilder;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -56,6 +59,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(android.R.style.Theme_Holo_NoActionBar);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("My House");
@@ -91,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position,
                                     long id) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), android.R.style.Theme_Holo_Dialog);
                 builder.setTitle("Current Tasks");
 
                 ListView modeList = new ListView(view.getContext());
@@ -103,7 +107,7 @@ public class HomeActivity extends AppCompatActivity {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, final int newpos,
                                             long id) {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext(), android.R.style.Theme_Holo_Dialog);
 
 
                         try {
@@ -183,7 +187,7 @@ public class HomeActivity extends AppCompatActivity {
         final View textEntryView = factory.inflate(R.layout.add_event, null);
         final EditText input2 = (EditText) textEntryView.findViewById(R.id.Title);
         input2.setText("", TextView.BufferType.EDITABLE);
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this, android.R.style.Theme_Holo_Dialog);
 
         final ArrayList<String> householdNames= new ArrayList<>();
         final AutoCompleteTextView name = (AutoCompleteTextView) textEntryView.findViewById(R.id.recipient);
@@ -238,7 +242,7 @@ public class HomeActivity extends AppCompatActivity {
 
         name.setText("", TextView.BufferType.EDITABLE);
 
-        final AlertDialog.Builder alert = new AlertDialog.Builder(this);
+        final AlertDialog.Builder alert = new AlertDialog.Builder(this, android.R.style.Theme_Holo_Dialog);
 
         final ArrayList<String> householdCopy = new ArrayList<String>();
 
