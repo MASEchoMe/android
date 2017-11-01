@@ -73,27 +73,32 @@ public class HomeActivity extends AppCompatActivity {
         // CREATE AND SAVE USER TOKEN IF NEEDED
         // TODO: should this be here or elsewhere?
         sharedPrefs = getPreferences(MODE_PRIVATE);
-        if (!sharedPrefs.contains("groupId")) {
-            try {
-                String newGroup = Authentication.newGroup();
-                sharedPrefsEditor = sharedPrefs.edit();
-                sharedPrefsEditor.putString(newGroup, "defaultValue");
-                sharedPrefsEditor.commit();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        new Thread(new Runnable(){
+            public void run() {
+                if (!sharedPrefs.contains("groupId")) {
+                    try {
+                        String newGroup = Authentication.newGroup();
+                        sharedPrefsEditor = sharedPrefs.edit();
+                        sharedPrefsEditor.putString(newGroup, "defaultValue");
+                        sharedPrefsEditor.commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
 
-        if (!sharedPrefs.contains("authToken")) {
-            try {
-                String newAuthToken = Authentication.newUser("currentUser", groupId);
-                sharedPrefsEditor = sharedPrefs.edit();
-                sharedPrefsEditor.putString(newAuthToken, "defaultValue");
-                sharedPrefsEditor.commit();
-            } catch (Exception e) {
-                e.printStackTrace();
+                if (!sharedPrefs.contains("authToken")) {
+                    try {
+                        String newAuthToken = Authentication.newUser("currentUser", groupId);
+                        sharedPrefsEditor = sharedPrefs.edit();
+                        sharedPrefsEditor.putString(newAuthToken, "defaultValue");
+                        sharedPrefsEditor.commit();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
             }
-        }
+
+        }).start();
 
         //LOGIC FOR FLOATING ACTION BUTTON --------------------------
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
