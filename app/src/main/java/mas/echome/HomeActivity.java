@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.Animatable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -55,6 +56,10 @@ public class HomeActivity extends AppCompatActivity {
     private Household household = new Household();
     private ArrayList<String> householdNames;
 
+    private SharedPreferences sharedPrefs;
+    private SharedPreferences.Editor sharedPrefsEditor;
+    private String groupId;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +69,31 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("My House");
         setSupportActionBar(toolbar);
+
+        // CREATE AND SAVE USER TOKEN IF NEEDED
+        // TODO: should this be here or elsewhere?
+        sharedPrefs = getPreferences(MODE_PRIVATE);
+        if (!sharedPrefs.contains("groupId")) {
+            try {
+                String newGroup = Authentication.newGroup();
+                sharedPrefsEditor = sharedPrefs.edit();
+                sharedPrefsEditor.putString(newGroup, "defaultValue");
+                sharedPrefsEditor.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (!sharedPrefs.contains("authToken")) {
+            try {
+                String newAuthToken = Authentication.newUser("currentUser", groupId);
+                sharedPrefsEditor = sharedPrefs.edit();
+                sharedPrefsEditor.putString(newAuthToken, "defaultValue");
+                sharedPrefsEditor.commit();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
 
         //LOGIC FOR FLOATING ACTION BUTTON --------------------------
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
