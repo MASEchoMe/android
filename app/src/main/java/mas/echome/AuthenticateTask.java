@@ -4,172 +4,76 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 
 /**
  * Created by rodri on 10/31/17.
  */
 
-public class AuthenticateTask extends AsyncTask<String, Void , String> {
-    private String requestsURL = "http://ec2-54-157-43-79.compute-1.amazonaws.com:3000";
+public class AuthenticateTask extends AsyncTask<String, Void , Boolean> {
+    private String baseURL = "http://ec2-54-157-43-79.compute-1.amazonaws.com:3000";
 
-    private Context context;
     private SharedPreferences sharedPrefs;
-    private SharedPreferences.Editor sharedPrefsEditor;
     private RequestQueue reqQueue;
 
-    @Override
-    protected String doInBackground(String... params) {
-        authenticate();
-        return null;
-    }
-
-    @Override
-    protected void onPostExecute(String result) {
-        System.out.println("Done"); // TODO: what to do here ?
-    }
+    private boolean success = false; // TODO: should probably do this some other way
 
     public AuthenticateTask(Context context, SharedPreferences sharedPrefs) {
-        super();
         this.sharedPrefs = sharedPrefs;
-        this.sharedPrefsEditor = sharedPrefs.edit();
-        this.context = context;
-        this.reqQueue = Volley.newRequestQueue(this.context);
-        this.sharedPrefsEditor.putString("userName", "currentUser"); // TODO: get name somehow
+        this.reqQueue = Volley.newRequestQueue(context);
     }
 
     /*
-     * Checks for the existence of a groupID and a user authentication token and fetches whichever
-     * are needed.
+     * Specifies what to actually do (in the background) when the .execute() function is called. The
+     * return value is passed back to the original place where .execute() was called.
      */
-    public void authenticate() {
-        if (!sharedPrefs.contains("groupId")) {
-            try {
-                newGroup();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (!sharedPrefs.contains("authToken")) {
-            try {
-                String groupId = sharedPrefs.getString("groupId", "defaultGroupId");
-                newUser("currentUser", groupId);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+    @Override
+    protected Boolean doInBackground(String... params) {
+        authenticate(params[0]); // Shouldn't be more than one arg
+        return success; // TODO: should probably do this some other way
     }
 
-    private void newGroup() throws Exception {
-        int reqType = Request.Method.POST;
-        String url = requestsURL + "/api/newGroup";
-
-        JsonObjectRequest jsonReq = new JsonObjectRequest
-                (reqType, url, null, new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        try {
-                            String groupIdResponse = response.getString("groupId");
-                            sharedPrefsEditor.putString("groupId", groupIdResponse);
-                            sharedPrefsEditor.commit();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }, new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        error.printStackTrace();
-                    }
-                });
-        reqQueue.add(jsonReq);
-    }
-
-    private void newUser(String name, String groupId) throws Exception {
-        int reqType = Request.Method.POST;
-        String url = requestsURL + "/api/newUserTempToken";
-
-        StringRequest stringRequest = new StringRequest(reqType, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject jsonResponse = new JSONObject(response).getJSONObject("form");
-                    String tempAuthToken = jsonResponse.getString("tempToken");
-                    getUser(tempAuthToken);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-            }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Override
-            public byte[] getBody() throws AuthFailureError {
-                byte[] body = new byte[0];
-                JSONObject jsonContent = new JSONObject();
-                try {
-                    jsonContent.put("name", sharedPrefs.getString("userName", "currentUser"));
-                    jsonContent.put("groupId", sharedPrefs.getString("groupId", "defaultGroupId"));
-                    body = jsonContent.toString().getBytes("UTF-8");
-                } catch (Exception error) {
-                    error.printStackTrace();
-                }
-                return body;
-            }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-                    responseString = String.valueOf(response.statusCode);
-                    // can get more details such as response.headers
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-            }
-        };
-        reqQueue.add(stringRequest);
-    }
-
-
-    private void getUser(final String tempToken) throws Exception {
+    /**
+     * Fetches the user's name and token based on the temporary token.
+     *
+     * @param  tempToken the temporary token
+     * @return           whether the user token was successfully retrieved
+     */
+    public Boolean authenticate(final String tempToken) {
         int reqType = Request.Method.GET;
-        String url = requestsURL + "/api/getUserToken";
+        String url = baseURL + "/api/getUserToken";
 
-        StringRequest stringRequest = new StringRequest(reqType, url, new Response.Listener<String>() {
+        JsonObjectRequest jsonReq = new JsonObjectRequest(reqType, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(String response) {
+            public void onResponse(JSONObject response) {
                 try {
-                    JSONObject jsonResponse = new JSONObject(response).getJSONObject("form");
-                    String authToken = jsonResponse.getString("token");
-                    sharedPrefsEditor.putString("token", authToken);
+                    String respName = response.getString("name");
+                    String respAuthToken = response.getString("token");
+                    SharedPreferences.Editor editor = sharedPrefs.edit();
+
+                    editor.putString("name", respName);
+                    editor.putString("token", respAuthToken);
+                    editor.commit();
+
+                    success = true; // TODO: should probably do this some other way
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
         }, new Response.ErrorListener() {
             @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
+            public void onErrorResponse(VolleyError e) {
+                e.printStackTrace();
             }
         }) {
             @Override
@@ -178,28 +82,26 @@ public class AuthenticateTask extends AsyncTask<String, Void , String> {
             }
 
             @Override
-            public byte[] getBody() throws AuthFailureError {
+            public byte[] getBody() {
                 byte[] body = new byte[0];
-                JSONObject jsonContent = new JSONObject();
+                HashMap<String, String> jsonMap = new HashMap<>();
+                JSONObject jsonBody;
+
+                jsonMap.put("tempToken", tempToken);
+                jsonBody = new JSONObject(jsonMap);
+
                 try {
-                    jsonContent.put("tempAuthToken", tempToken);
-                    body = jsonContent.toString().getBytes("UTF-8");
-                } catch (Exception error) {
-                    error.printStackTrace();
+                    body = jsonBody.toString().getBytes("UTF-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
                 }
+
                 return body;
             }
-
-            @Override
-            protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                String responseString = "";
-                if (response != null) {
-                    responseString = String.valueOf(response.statusCode);
-                    // can get more details such as response.headers
-                }
-                return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-            }
         };
-        reqQueue.add(stringRequest);
+
+        reqQueue.add(jsonReq);
+
+        return true; // TODO: actually return something useful
     }
 }
