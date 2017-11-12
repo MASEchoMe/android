@@ -1,52 +1,31 @@
 package mas.echome;
 
-import android.animation.Animator;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Animatable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.content.Context;
-import android.content.ContextWrapper;
-import android.support.v7.view.menu.MenuBuilder;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
 
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
-
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -56,9 +35,7 @@ public class HomeActivity extends AppCompatActivity {
     private Household household = new Household();
     private ArrayList<String> householdNames;
 
-    private SharedPreferences sharedPrefs;
-    private SharedPreferences.Editor sharedPrefsEditor;
-    private String groupId;
+    private SharedPreferences sharedPrefs  = getPreferences(MODE_PRIVATE);
 
 
     @Override
@@ -71,34 +48,7 @@ public class HomeActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // CREATE AND SAVE USER TOKEN IF NEEDED
-        // TODO: should this be here or elsewhere?
-        sharedPrefs = getPreferences(MODE_PRIVATE);
-        new Thread(new Runnable(){
-            public void run() {
-                if (!sharedPrefs.contains("groupId")) {
-                    try {
-                        String newGroup = Authentication.newGroup();
-                        sharedPrefsEditor = sharedPrefs.edit();
-                        sharedPrefsEditor.putString(newGroup, "defaultValue");
-                        sharedPrefsEditor.commit();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                if (!sharedPrefs.contains("authToken")) {
-                    try {
-                        String newAuthToken = Authentication.newUser("currentUser", groupId);
-                        sharedPrefsEditor = sharedPrefs.edit();
-                        sharedPrefsEditor.putString(newAuthToken, "defaultValue");
-                        sharedPrefsEditor.commit();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-        }).start();
+        new AuthenticateTask(this.getApplicationContext(), sharedPrefs).execute();
 
         //LOGIC FOR FLOATING ACTION BUTTON --------------------------
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);
