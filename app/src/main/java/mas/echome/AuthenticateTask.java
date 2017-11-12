@@ -22,7 +22,7 @@ import org.json.JSONObject;
  */
 
 public class AuthenticateTask extends AsyncTask<String, Void , String> {
-    private String requestsURL = "ec2-54-157-43-79.compute-1.amazonaws.com:3000";
+    private String requestsURL = "http://ec2-54-157-43-79.compute-1.amazonaws.com:3000";
 
     private Context context;
     private SharedPreferences sharedPrefs;
@@ -99,7 +99,7 @@ public class AuthenticateTask extends AsyncTask<String, Void , String> {
 
     private void newUser(String name, String groupId) throws Exception {
         int reqType = Request.Method.POST;
-        String url = requestsURL + "/api/getUserToken";
+        String url = requestsURL + "/api/newUserTempToken";
 
         StringRequest stringRequest = new StringRequest(reqType, url, new Response.Listener<String>() {
             @Override
