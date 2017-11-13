@@ -1,9 +1,8 @@
 package mas.echome;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -11,6 +10,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Mailbox extends AppCompatActivity {
+    SharedPreferences sharedPrefs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,10 +20,11 @@ public class Mailbox extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("My Mailbox");
         setSupportActionBar(toolbar);
+        sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
 
         RelativeLayout cur = (RelativeLayout) findViewById(R.id.content_mailbox);
         TextView txtview = (TextView) findViewById(R.id.setupFor);
-        txtview.setText("Mailbox for : INSERT USERNAME HERE");
+        txtview.setText("Mailbox for : " + sharedPrefs.getString("name", "You"));
     }
 
     protected void setup(View view) {

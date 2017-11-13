@@ -3,6 +3,7 @@ package mas.echome;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private Household household = new Household();
     private ArrayList<String> householdNames;
+    private SharedPreferences sharedPrefs;
 
 
     @Override
@@ -43,6 +45,7 @@ public class HomeActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("My House");
         setSupportActionBar(toolbar);
+        sharedPrefs = getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE);
 
         //LOGIC FOR FLOATING ACTION BUTTON --------------------------
         FabSpeedDial fabSpeedDial = (FabSpeedDial) findViewById(R.id.fab_speed_dial);

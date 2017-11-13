@@ -157,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
     protected void go(View view) {
         tempToken = mTempTokenTextView.getText().toString();
-        new AuthenticateTask(this, getPreferences(MODE_PRIVATE)).execute(tempToken);
+        new AuthenticateTask(this, getSharedPreferences(getString(R.string.preference_file_key), MODE_PRIVATE)).execute(tempToken);
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }

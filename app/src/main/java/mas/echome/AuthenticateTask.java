@@ -13,16 +13,12 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
-
 /**
  * Created by rodri on 10/31/17.
  */
 
 public class AuthenticateTask extends AsyncTask<String, Void , Void> {
     private String baseURL = "https://55caf19a-7559-4be5-bdbf-edf4bd64043c.mock.pstmn.io";
-    //private String baseURL = "https://reddit.com";
 
     private SharedPreferences sharedPrefs;
     private RequestQueue reqQueue;
@@ -47,9 +43,9 @@ public class AuthenticateTask extends AsyncTask<String, Void , Void> {
      *
      * @param  tempToken the temporary token
      */
-    public void authenticate(final String tempToken) {
+    public void authenticate(String tempToken) {
         int reqType = Request.Method.GET;
-        String url = baseURL + "/api/getUserToken";
+        String url = baseURL + "/api/getUserToken?tempToken=" + tempToken;
 
         JsonObjectRequest jsonReq = new JsonObjectRequest(reqType, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -71,30 +67,7 @@ public class AuthenticateTask extends AsyncTask<String, Void , Void> {
             public void onErrorResponse(VolleyError e) {
                 e.printStackTrace();
             }
-        }) {
-            @Override
-            public String getBodyContentType() {
-                return "application/json; charset=utf-8";
-            }
-
-            @Override
-            public byte[] getBody() {
-                byte[] body = new byte[0];
-                HashMap<String, String> jsonMap = new HashMap<>();
-                JSONObject jsonBody;
-
-                jsonMap.put("tempToken", tempToken);
-                jsonBody = new JSONObject(jsonMap);
-
-                try {
-                    body = jsonBody.toString().getBytes("UTF-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-
-                return body;
-            }
-        };
+        });
 
         reqQueue.add(jsonReq);
     }
