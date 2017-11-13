@@ -20,13 +20,12 @@ import java.util.HashMap;
  * Created by rodri on 10/31/17.
  */
 
-public class AuthenticateTask extends AsyncTask<String, Void , Boolean> {
-    private String baseURL = "http://ec2-54-157-43-79.compute-1.amazonaws.com:3000";
+public class AuthenticateTask extends AsyncTask<String, Void , Void> {
+    private String baseURL = "https://55caf19a-7559-4be5-bdbf-edf4bd64043c.mock.pstmn.io";
+    //private String baseURL = "https://reddit.com";
 
     private SharedPreferences sharedPrefs;
     private RequestQueue reqQueue;
-
-    private boolean success = false; // TODO: should probably do this some other way
 
     public AuthenticateTask(Context context, SharedPreferences sharedPrefs) {
         this.sharedPrefs = sharedPrefs;
@@ -38,18 +37,17 @@ public class AuthenticateTask extends AsyncTask<String, Void , Boolean> {
      * return value is passed back to the original place where .execute() was called.
      */
     @Override
-    protected Boolean doInBackground(String... params) {
+    protected Void doInBackground(String... params) {
         authenticate(params[0]); // Shouldn't be more than one arg
-        return success; // TODO: should probably do this some other way
+        return null;
     }
 
     /**
      * Fetches the user's name and token based on the temporary token.
      *
      * @param  tempToken the temporary token
-     * @return           whether the user token was successfully retrieved
      */
-    public Boolean authenticate(final String tempToken) {
+    public void authenticate(final String tempToken) {
         int reqType = Request.Method.GET;
         String url = baseURL + "/api/getUserToken";
 
@@ -64,8 +62,6 @@ public class AuthenticateTask extends AsyncTask<String, Void , Boolean> {
                     editor.putString("name", respName);
                     editor.putString("token", respAuthToken);
                     editor.commit();
-
-                    success = true; // TODO: should probably do this some other way
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -101,7 +97,5 @@ public class AuthenticateTask extends AsyncTask<String, Void , Boolean> {
         };
 
         reqQueue.add(jsonReq);
-
-        return true; // TODO: actually return something useful
     }
 }
