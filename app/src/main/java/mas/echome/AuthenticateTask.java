@@ -32,8 +32,7 @@ public class AuthenticateTask extends AsyncTask<String, Void , Void> {
     }
 
     /*
-     * Specifies what to actually do (in the background) when the .execute() function is called. The
-     * return value is passed back to the original place where .execute() was called.
+     * Specifies what to actually do (in the background) when the .execute() function is called.
      */
     @Override
     protected Void doInBackground(String... params) {

@@ -28,6 +28,7 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 public class HomeActivity extends AppCompatActivity {
+    private HomeActivity selfReference; // TODO: I know this shit is garbage I'll fix it later
 
     private ListView listView;
     ArrayAdapter<String> adapter;
@@ -40,6 +41,7 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        selfReference = this;
         setTheme(android.R.style.Theme_Holo_NoActionBar);
         setContentView(R.layout.activity_home);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -241,10 +243,7 @@ public class HomeActivity extends AppCompatActivity {
                         if (householdCopy.contains(name.getText().toString().toLowerCase())) {
                             Toast.makeText(getApplicationContext(),"That person's already been added!",Toast.LENGTH_SHORT).show();
                         } else {
-                            Person p = new Person(name.getText().toString());
-                            household.addToHousehold(p);
-                            householdNames.add(name.getText().toString());
-                            adapter.notifyDataSetChanged();
+                            new AddUserTask(selfReference).execute(name.getText().toString());
                         }
 
                     }
@@ -267,11 +266,24 @@ public class HomeActivity extends AppCompatActivity {
         household.setHousehold(householdMembers);
         householdNames = new ArrayList<>();
         adapter.clear();
+
+        householdNames.add("");
+        adapter.add("");
+        adapter.notifyDataSetChanged();
+
         for (Person p : household.getMembers()) { // TODO: there is probably a better way of doing this
             householdNames.add(p.toString());
             adapter.add(p.toString());
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void addHouseholdMember(String name) {
+        Person p = new Person(name);
+        household.addToHousehold(p);
+        householdNames.add(name);
+        adapter.add(name);
+        adapter.notifyDataSetChanged();
     }
 }
 
