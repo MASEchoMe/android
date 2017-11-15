@@ -8,25 +8,23 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
-
-import java.util.HashMap;
 
 /**
  * Created by rodri on 11/15/17.
  */
 
-public class AddUserTask extends AsyncTask<String, Void, Void> {
+public class SendMessageTask extends AsyncTask<String, Void, Void> {
     private HomeActivity activity;
     private SharedPreferences sharedPrefs;
     private RequestQueue reqQueue;
 
     private String baseURL;
 
-    public AddUserTask(HomeActivity activity) {
+    public SendMessageTask(HomeActivity activity) {
         this.activity = activity;
         this.sharedPrefs = activity.getSharedPreferences(activity.getString(R.string.preference_file_key), Context.MODE_PRIVATE);
         this.reqQueue = Volley.newRequestQueue(this.activity);
@@ -38,24 +36,29 @@ public class AddUserTask extends AsyncTask<String, Void, Void> {
      */
     @Override
     protected Void doInBackground(String... params) {
-        addUser(params[0]);
+        sendMessage(params[0], params[1]);
         return null;
     }
 
-    private void addUser(final String name) {
+    private void sendMessage(final String recipient, final String msg) {
         int reqType = Request.Method.POST;
         final String groupId = sharedPrefs.getString("groupId", "1");
-        String url = baseURL + "/api/newUserTempToken?name=" + name + "&groupId=" + groupId;
+        final String sender = sharedPrefs.getString("name", "You");
+        String url = baseURL + "/api/messages";
 
-        JsonObjectRequest jsonReq = new JsonObjectRequest(reqType, url, null, new Response.Listener<JSONObject>() {
+        StringRequest jsonReq = new StringRequest(reqType, url, new Response.Listener<String>() {
             @Override
-            public void onResponse(JSONObject response) {
+            public void onResponse(String response) {
                 try {
-                    // If this doesn't error it means that we successfully created a new user, but
-                    // at this moment we don't use the tempToken for anything.
+                    // If this doesn't error it means that we successfully posted a message, but
+                    // at this moment we don't use the response for anything.
                     // TODO: clean this up
-                    String tempToken = response.getString("tempToken");
-                    activity.addHouseholdMember(name);
+                    if (response.equals("Successfully added " + sender + "'s message to " + recipient)) {
+                        activity.sendMessage(recipient, sender, msg);
+                    } else {
+                        // TODO: more garbage I know, I swear I'll fix this later
+                        throw new Exception("Unable to send message at this time.");
+                    }
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -69,22 +72,27 @@ public class AddUserTask extends AsyncTask<String, Void, Void> {
             @Override
             public byte[] getBody() {
                 byte[] body = new byte[0];
-                HashMap<String, String> map = new HashMap<>();
-                JSONObject jsonBody;
+                JSONObject jsonBody = new JSONObject();
 
                 try {
-                    map.put("name", name);
-                    map.put("groupId", groupId);
-                    jsonBody = new JSONObject(map);
+                    jsonBody.put("recipient", recipient);
+                    jsonBody.put("groupId", groupId);
+                    jsonBody.put("sender", sender);
+                    jsonBody.put("message", msg);
                     body = jsonBody.toString().getBytes();
-                } catch (UnsupportedOperationException uee) {
-                    uee.printStackTrace();
+                    System.out.println(jsonBody.toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
 
                 return body;
             }
-        };
 
+            @Override
+            public String getBodyContentType() {
+                return "application/json";
+            }
+        };
 
         reqQueue.add(jsonReq);
     }

@@ -95,7 +95,7 @@ public class HomeActivity extends AppCompatActivity {
 
 
                         try {
-                            Task curTask = household.getPerson(position).getTasks().get(newpos);
+                            Task curTask = household.getPerson(position-1).getTasks().get(newpos);
                             builder.setTitle(curTask.getDescription());
 
                             final TextView message = new TextView(view.getContext());
@@ -111,7 +111,7 @@ public class HomeActivity extends AppCompatActivity {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog,
                                                             int whichButton) {
-                                            household.getPerson(position).getTasks().remove(newpos);
+                                            household.getPerson(position-1).getTasks().remove(newpos);
                                             adapter.notifyDataSetChanged();
                                             dia.dismiss();
                                         }
@@ -141,7 +141,7 @@ public class HomeActivity extends AppCompatActivity {
                 dia.show();
 
                 ArrayList<String> curTasks = new ArrayList<String>();
-                Person p = household.getPerson(position);
+                Person p = household.getPerson(position-1);
 
                 if (p.getNumTasks() == 0) {
                     curTasks.add("No tasks available for " + p.getName() + " right now.");
@@ -153,6 +153,8 @@ public class HomeActivity extends AppCompatActivity {
 
                 ArrayAdapter<String> modeAdapter = new ArrayAdapter<String>(view.getContext(), android.R.layout.simple_list_item_1, android.R.id.text1, curTasks);
                 modeList.setAdapter(modeAdapter);
+
+                new GetMessagesTask(selfReference, p, modeAdapter).execute();
             }
         });
 
@@ -203,9 +205,10 @@ public class HomeActivity extends AppCompatActivity {
                                 if (p.getName().toLowerCase().equalsIgnoreCase(name.getText().toString())) {
                                     index = i;
                                 }
+
                                 i++;
                             }
-                            household.getPerson(index).giveTask(new Task(new Person("InsertSenderHere"), input2.getText().toString()));
+                            new SendMessageTask(selfReference).execute(household.getPerson(index).toString(), input2.getText().toString());
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -284,6 +287,34 @@ public class HomeActivity extends AppCompatActivity {
         householdNames.add(name);
         adapter.add(name);
         adapter.notifyDataSetChanged();
+    }
+
+    public void sendMessage(String recipient, String sender, String msg) {
+        int i  = 0;
+        int index = 0;
+        int u = 0;
+        for (Person p: household.getMembers()) {
+            if (p.getName().toLowerCase().equalsIgnoreCase(recipient)) {
+                index = i;
+            }
+
+            if (p.getName().toLowerCase().equalsIgnoreCase(sender)) {
+                u = i;
+            }
+
+            i++;
+        }
+        household.getPerson(index).giveTask(new Task(household.getPerson(u), msg));
+        adapter.notifyDataSetChanged();
+    }
+
+    public void refreshMessages(Person p, ArrayAdapter<String> adapter) {
+        adapter.clear();
+
+        for (Task t: p.getTasks()) {
+            adapter.add(t.getDescription());
+            adapter.notifyDataSetChanged();
+        }
     }
 }
 

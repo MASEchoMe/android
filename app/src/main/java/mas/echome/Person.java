@@ -21,6 +21,10 @@ public class Person {
         tasks.add(t);
     }
 
+    public void setTask(ArrayList<Task> arrList) {
+        this.tasks =  arrList;
+    }
+
     public String getName() {
         return name;
     }

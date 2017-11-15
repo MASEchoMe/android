@@ -23,6 +23,20 @@ public class Task {
         this.date = date;
     }
 
+    public Task(Person sender, String description, String dateStr) {
+        this.sender = sender;
+        this.description = description;
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        try {
+            Date date = dateFormat.parse(dateStr);
+            this.date = date;
+        } catch (Exception e) {
+            this.date = new Date();
+            e.printStackTrace();
+        }
+    }
+
     public Person getSender() {
         return sender;
     }
