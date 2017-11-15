@@ -24,7 +24,7 @@ public class Mailbox extends AppCompatActivity {
 
         RelativeLayout cur = (RelativeLayout) findViewById(R.id.content_mailbox);
         TextView txtview = (TextView) findViewById(R.id.setupFor);
-        txtview.setText("Mailbox for : " + sharedPrefs.getString("name", "You"));
+        txtview.setText(sharedPrefs.getString("name", "You") + "'s Mailbox");
     }
 
     protected void setup(View view) {
