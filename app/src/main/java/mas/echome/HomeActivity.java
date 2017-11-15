@@ -111,8 +111,7 @@ public class HomeActivity extends AppCompatActivity {
                                     new DialogInterface.OnClickListener() {
                                         public void onClick(DialogInterface dialog,
                                                             int whichButton) {
-                                            household.getPerson(position-1).getTasks().remove(newpos);
-                                            adapter.notifyDataSetChanged();
+                                            new DeleteMessageTask(selfReference, household.getPerson(position-1), newpos).execute();
                                             dia.dismiss();
                                         }
                                     }).setNegativeButton("Cancel",

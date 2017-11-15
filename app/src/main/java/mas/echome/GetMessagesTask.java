@@ -61,11 +61,14 @@ public class GetMessagesTask extends AsyncTask<String, Void, Void> {
                     String sender_name;
                     String msg;
                     String dateStr;
+                    String id;
+                    p.setTask(new ArrayList<Task>());
                     for (int i = 0; i < response.length(); i++) {
                         sender_name = response.getJSONObject(i).getString("sender_name");
                         msg = response.getJSONObject(i).getString("message");
                         dateStr = response.getJSONObject(i).getString("create_date");
-                        p.giveTask(new Task(new Person(sender_name), msg, dateStr));
+                        id = response.getJSONObject(i).getString("message_id");
+                        p.giveTask(new Task(new Person(sender_name), msg, dateStr, id));
                     }
 
                     activity.refreshMessages(p, adapter);
