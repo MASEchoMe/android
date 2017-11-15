@@ -23,7 +23,7 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
-    <string name="instructions">Enter the token provided to you by your Amazon Echo.</string>
+    <string name="instructions">Say \'Alexa, ask my echome to get a temporary echome token\'</string>
     <string name="title_activity_home">HomeActivity</string>
     <string name="title_activity_mailbox">Mailbox</string>
     <string name="title_activity_setup">SetupActivity</string>
