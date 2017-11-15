@@ -1,6 +1,5 @@
 package mas.echome;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
@@ -17,6 +16,10 @@ public class Household {
 
     public void addToHousehold(Person p) {
         members.add(p);
+    }
+
+    public void setHousehold(ArrayList<Person> l) {
+        members = l;
     }
 
     public ArrayList<Person> getMembers() {

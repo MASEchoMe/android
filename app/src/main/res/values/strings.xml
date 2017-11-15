@@ -28,4 +28,5 @@
     <string name="title_activity_mailbox">Mailbox</string>
     <string name="title_activity_setup">SetupActivity</string>
     <string name="preference_file_key">mas.echome.PREFERENCE_FILE_KEY</string>
+    <string name="requests_url">http://ec2-54-157-43-79.compute-1.amazonaws.com:3000</string>
 </resources>

@@ -18,14 +18,17 @@ import org.json.JSONObject;
  */
 
 public class AuthenticateTask extends AsyncTask<String, Void , Void> {
-    private String baseURL = "https://55caf19a-7559-4be5-bdbf-edf4bd64043c.mock.pstmn.io";
-
+    private Context context;
     private SharedPreferences sharedPrefs;
     private RequestQueue reqQueue;
 
+    private String baseURL;
+
     public AuthenticateTask(Context context, SharedPreferences sharedPrefs) {
+        this.context = context;
         this.sharedPrefs = sharedPrefs;
-        this.reqQueue = Volley.newRequestQueue(context);
+        this.reqQueue = Volley.newRequestQueue(this.context);
+        this.baseURL = context.getString(R.string.requests_url);
     }
 
     /*
@@ -43,20 +46,20 @@ public class AuthenticateTask extends AsyncTask<String, Void , Void> {
      *
      * @param  tempToken the temporary token
      */
-    public void authenticate(String tempToken) {
+    private void authenticate(String tempToken) {
         int reqType = Request.Method.GET;
-        String url = baseURL + "/api/getUserToken?tempToken=" + tempToken;
+        String url = baseURL + "/api/getUser?tempToken=" + tempToken;
 
         JsonObjectRequest jsonReq = new JsonObjectRequest(reqType, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
                 try {
                     String respName = response.getString("name");
-                    String respAuthToken = response.getString("token");
+                    String respGroupId = response.getString("groupId");
                     SharedPreferences.Editor editor = sharedPrefs.edit();
 
                     editor.putString("name", respName);
-                    editor.putString("token", respAuthToken);
+                    editor.putString("groupId", respGroupId);
                     editor.commit();
                 } catch (Exception e) {
                     e.printStackTrace();

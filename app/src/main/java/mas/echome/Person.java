@@ -32,4 +32,9 @@ public class Person {
     public int getNumTasks() {
         return tasks.size();
     }
+
+    @Override
+    public String toString() {
+        return getName();
+    }
 }

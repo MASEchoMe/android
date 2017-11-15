@@ -162,6 +162,8 @@ public class HomeActivity extends AppCompatActivity {
 
         adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, android.R.id.text1, householdNames);
         listView.setAdapter(adapter);
+
+        new GetUsersTask(this).execute();
         }
 
     protected void addEvent(View view) {
@@ -259,6 +261,17 @@ public class HomeActivity extends AppCompatActivity {
     protected void gotoMailbox(View view) {
         Intent i = new Intent(this, Mailbox.class);
         startActivity(i);
+    }
+
+    public void refreshHouseholdMembers(ArrayList<Person> householdMembers) {
+        household.setHousehold(householdMembers);
+        householdNames = new ArrayList<>();
+        adapter.clear();
+        for (Person p : household.getMembers()) { // TODO: there is probably a better way of doing this
+            householdNames.add(p.toString());
+            adapter.add(p.toString());
+            adapter.notifyDataSetChanged();
+        }
     }
 }
 
