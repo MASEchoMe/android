@@ -7,13 +7,15 @@ import android.widget.ArrayAdapter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -64,52 +66,29 @@ public class DeleteMessageTask extends AsyncTask<String, Void, Void> {
             i++;
         }
         final String idToDelete = currId;
-        StringRequest jsonReq = new StringRequest(reqType, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    // If this doesn't error it means that we successfully posted a message, but
-                    // at this moment we don't use the response for anything.
-                    // TODO: clean this up
-                    if (response.equals("Successfully deleted message " + idToDelete)) {
-                        p.getTasks().remove(position);
-                    } else {
-                        // TODO: more garbage I know, I swear I'll fix this later
-                        throw new Exception("Unable to delete message at this time.");
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError e) {
-                e.printStackTrace();
-            }
-        }) {
-            @Override
-            public byte[] getBody() {
-                System.out.println("getBody has been called");
-                byte[] body = new byte[0];
-                JSONObject jsonBody = new JSONObject();
 
-                try {
-                    jsonBody.put("messageId", idToDelete);
-                    body = jsonBody.toString().getBytes();
-                    System.out.println(jsonBody.toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        HttpURLConnection urlConnection;
+        try {
+            urlConnection = (HttpURLConnection) (new URL(url)).openConnection();
+            urlConnection.setRequestMethod("DELETE");
+            urlConnection.setDoOutput(true);
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            JSONObject jsonBody = new JSONObject();
 
-                return body;
+            OutputStreamWriter osw = new OutputStreamWriter(urlConnection.getOutputStream());
+            jsonBody.put("messageId", idToDelete);
+            osw.write(jsonBody.toString());
+            osw.flush();
+
+            int HttpResult = urlConnection.getResponseCode();
+            if (HttpResult == HttpURLConnection.HTTP_OK) {
+                InputStream is = new BufferedInputStream(urlConnection.getInputStream());
+                System.out.println(is.read());
+            } else {
+                System.out.println(HttpResult);
             }
-
-            @Override
-            public String getBodyContentType() {
-                return "application/json";
-            }
-        };
-
-        reqQueue.add(jsonReq);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
