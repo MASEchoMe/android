@@ -54,7 +54,6 @@ public class GetRecommendationsTask extends AsyncTask<String, Void, Void> {
                 try {
                     String productLink = response.getString(0);
                     task.setLink(productLink);
-                    System.out.println(productLink);
                     task.setLinkDescription("Recommendation for:<br/><a href=\"" + productLink + "\">" + product.toLowerCase() + "</a>");
                     activity.refreshRecommendation();
                 } catch (Exception e) {
