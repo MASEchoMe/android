@@ -32,7 +32,7 @@ public class Mailbox extends AppCompatActivity {
         startActivity(i);
     }
 
-    protected void goBack(View view) {
+    public void goBack(View view) {
         Intent i = new Intent(this, HomeActivity.class);
         startActivity(i);
     }

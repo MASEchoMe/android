@@ -68,7 +68,12 @@ public class GetMessagesTask extends AsyncTask<String, Void, Void> {
                         msg = response.getJSONObject(i).getString("message");
                         dateStr = response.getJSONObject(i).getString("create_date");
                         id = response.getJSONObject(i).getString("message_id");
-                        p.giveTask(new Task(new Person(sender_name), msg, dateStr, id));
+                        Task newTask = new Task(new Person(sender_name), msg, dateStr, id);
+                        if (msg.toLowerCase().contains("buy")) {
+                            String product = msg.replaceAll("(?i)buy", "");
+                            new GetRecommendationsTask(activity, newTask, product).execute();
+                        }
+                        p.giveTask(newTask);
                     }
 
                     activity.refreshMessages(p, adapter);
