@@ -14,6 +14,8 @@ public class Task {
     private Date date;
     private int numTasks;
     private String id;
+    private String link = null;
+    private String linkDescription;
 
     public Task(Person sender, String description) {
         this.sender = sender;
@@ -51,6 +53,8 @@ public class Task {
         return description;
     }
 
+    public void setDescription(String description) { this.description = description; }
+
     public Date getDate() {
         return date;
     }
@@ -62,4 +66,16 @@ public class Task {
     public String getId() {
         return id;
     }
+
+    public String getLink() { return link; }
+
+    public void setLink(String link) { this.link = link; }
+
+    public String getLinkDescription() {
+        return linkDescription;
+    }
+
+    public void setLinkDescription(String linkDescription) { this.linkDescription = linkDescription; }
+
+    public boolean hasLink() { return link != null; }
 }

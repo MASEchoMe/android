@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
 import android.text.util.Linkify;
@@ -100,10 +101,16 @@ public class HomeActivity extends AppCompatActivity {
 
                             final TextView message = new TextView(view.getContext());
                             final SpannableString s =
-                                    new SpannableString("Left by: "
+                                    new SpannableString("Task left by: "
                                             + curTask.getSenderName() + " at " + curTask.getDate().toString());
                             Linkify.addLinks(s, Linkify.WEB_URLS);
-                            message.setText(s);
+
+                            if (curTask.hasLink()) {
+                                message.setText(Html.fromHtml(curTask.getLinkDescription() + "<br/><br/>" + s));
+                            } else {
+                                message.setText(s);
+                            }
+
                             message.setPadding(30, 30, 30, 30);
                             message.setMovementMethod(LinkMovementMethod.getInstance());
                             builder.setView(message);
@@ -259,7 +266,7 @@ public class HomeActivity extends AppCompatActivity {
         alert.show();
     }
 
-    protected void gotoMailbox(View view) {
+    public void gotoMailbox(View view) {
         Intent i = new Intent(this, Mailbox.class);
         startActivity(i);
     }
@@ -314,6 +321,10 @@ public class HomeActivity extends AppCompatActivity {
             adapter.add(t.getDescription());
             adapter.notifyDataSetChanged();
         }
+    }
+
+    public void refreshRecommendation() {
+        // do nothing
     }
 }
 
